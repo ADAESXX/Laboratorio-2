@@ -73,7 +73,7 @@ public class Jugar {
         }
     }
 
-    public boolean JuegoTerminado(){
+    public boolean juegoTerminado(){
         for (int f=0; f<tablero.length; f++){
             for (int c=0; c<tablero[0].length; c++){
                 if (tablero[f][c].getEstado()==false){
