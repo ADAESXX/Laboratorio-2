@@ -205,20 +205,30 @@ public class Principal {
                                             Ficha f1 = tablero[seleccion[0]][seleccion[1]];
                                             Ficha f2 = tablero[seleccion[2]][seleccion[3]];
                                             
-                                            if (f1.getId() != f2.getId()) {
+                                            boolean valida=partida.jugarTurno(seleccion[0], seleccion[1], seleccion[2], seleccion[3]);
+                                            
+                                            
+                                            if (valida==false) {
                                                 // no son iguales → voltearlas de nuevo
                                                 f1.setImagen(0, false);
                                                 f2.setImagen(0, false);
                                                 botonesSeleccionados[0].setText(f1.getImagen());
                                                 botonesSeleccionados[1].setText(f2.getImagen());
                                                 
-                                                // cambiar turno
-                                                partida.cambiarTurno();
-                                                lblInfo.setText("Turno: " + partida.getTurnoActual().getNombre());
+                 
+                                                
                                             }
                                             else {
-                                            	//son iguales
+                                            	//son iguales se cambia su estado a inhabilitado
+                                            	botonesSeleccionados[0].setEnabled(false);
+                                                botonesSeleccionados[1].setEnabled(false);
+                                                
                                             }
+                                            lblInfo.setText(
+                                            		"Turno: " + partida.getTurnoActual().getNombre() + "                       " + 
+                                            	     partida.getJugador().getNombre() + ": " + partida.getJugador().getPunteo() + " | " +partida.getOponente().getNombre() + ": " + partida.getOponente().getPunteo()
+                                            );
+                                            
                                             // reset
                                             Arrays.fill(seleccion, -1);
                                             turnoActivo[0] = true;
