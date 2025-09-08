@@ -5,11 +5,13 @@ public class Jugar {
     private Jugador turnoActual;
 
     public Jugar(){
-
+    	oponente=null;
+    	jugador=null;
     }
 
     public void setOponente(Jugador newOponente){
         this.oponente=newOponente;
+        this.oponente.setPunteo(0);
     }
     public Jugador getOponente(){
         return oponente;
@@ -20,6 +22,7 @@ public class Jugar {
         this.jugador= newJugador;
         //se define que este será el primero en jugar
         this.turnoActual=jugador;
+        this.jugador.setPunteo(0);
     }
     public Jugador getJugador(){
         return jugador;
@@ -48,6 +51,8 @@ public class Jugar {
             turnoActual=jugador;
         }
     }
+    
+    
     // f1 y c1 corresponden a las coordenadas de la ficha en el tablero
     // f2 y c2 corresponden a las coordenadas de la ficha en el tablero
     public boolean jugarTurno(int f1, int c1, int f2, int c2){

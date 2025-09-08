@@ -86,7 +86,7 @@ public class Principal {
                     j1 = null;
                     j2 = null;
                     partida = null;
-                    JOptionPane.showMessageDialog(frame, "Nueva sesión creada");
+                    JOptionPane.showMessageDialog(frame, "Nueva sesión creada, además tome en cuenta que puede jugar las veces que desee en esta sesión");
                     break;
 
                 case "Crear jugadores para esta sesión":
@@ -118,6 +118,7 @@ public class Principal {
                     }
                     //creacion del tablero con los valores pares ingresados por el usuario
                     try {
+                    	
                         int filas = Integer.parseInt(JOptionPane.showInputDialog(frame, "Número de filas (par):"));
                         int columnas = Integer.parseInt(JOptionPane.showInputDialog(frame, "Número de columnas (par):"));
 
@@ -224,6 +225,14 @@ public class Principal {
                                                 botonesSeleccionados[1].setEnabled(false);
                                                 
                                             }
+                                            //valida si ya se termino la partida para agregar la informacion al historial de sesion
+                                            if (partida.juegoTerminado()) {
+                                                historial.setSesiones(j1, j2, partida.determinarGanador());
+                                                JOptionPane.showMessageDialog(tableroFrame, 
+                                                    "Partida finalizada.\nGanador: " + 
+                                                    (partida.determinarGanador() != null ? partida.determinarGanador().getNombre() : "Empate"));
+                                            }
+
                                             lblInfo.setText(
                                             		"Turno: " + partida.getTurnoActual().getNombre() + "                       " + 
                                             	     partida.getJugador().getNombre() + ": " + partida.getJugador().getPunteo() + " | " +partida.getOponente().getNombre() + ": " + partida.getOponente().getPunteo()
@@ -255,21 +264,19 @@ public class Principal {
                     catch (NumberFormatException ex) {
                         JOptionPane.showMessageDialog(frame, "Ingrese un número válido");
                     }
+         
                     break;
 
                 case "Mostrar reporte":
-                	//se revisa si ya hay una sesion creada
-                    if (historial == null || historial.getSesiones().isEmpty()) {
-                        JOptionPane.showMessageDialog(frame, "No hay partidas para mostrar");
+                	if ( historial!=null && partida.getOponente()!=null && partida.getOponente()!=null && partida.juegoTerminado()) {
+                		JOptionPane.showMessageDialog(frame, historial.getSesiones(), "Historial de Sesiones", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+                	}
+                	else {
+                		JOptionPane.showMessageDialog(frame, "No hay partidas para mostrar, porque quizas no ha iniciado sesion o empezado una partida");
                         return;
-                    }
-                    //muestra el historial de las sesiones
-                    StringBuilder sb = new StringBuilder();
-                    for (String s : historial.getSesiones()) {
-                        sb.append(s).append("\n\n");
-                    }
-                    JOptionPane.showMessageDialog(frame, sb.toString(), "Historial de Sesiones", JOptionPane.INFORMATION_MESSAGE);
-                    break;
+                	}
+                
             }
         }
 
