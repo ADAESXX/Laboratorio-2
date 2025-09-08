@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -136,32 +138,105 @@ public class Principal {
                         tableroFrame.setSize(600, 600);
                         tableroFrame.getContentPane().setLayout(new BorderLayout());
                         JPanel panelGrid = new JPanel(new GridLayout(tablero.length, tablero[0].length));
+                        
+                        
                         //se hace la matriz con botones
                         JButton[][] botones = new JButton[tablero.length][tablero[0].length];
+                        
+                        //variables para usar en el listener
+                        //indica las posiciones de las 2 fichas seleccionadas
+                        final int[] seleccion = {-1, -1, -1, -1};
+                        final JButton[] botonesSeleccionados = new JButton[2];
+                        //bloquea el estado mientras se valida
+                        final boolean[] turnoActivo = {true};
+                        
+                        //solo actualiza los turnos visualmente
+                        JLabel lblInfo = new JLabel("Turno: " + partida.getTurnoActual().getNombre());
+                        tableroFrame.getContentPane().add(lblInfo, BorderLayout.SOUTH);
+                        
+                        
                         //se recorre la matriz de botones con la informacion del tablero
                         for (int f = 0; f < tablero.length; f++) {
                             for (int c = 0; c < tablero[0].length; c++) {
+                            	
+                            	//copias de contadores/variables
+                            	final int fila = f;
+                                final int col = c;
+                                
                             	//se toma la ficha del tablero
-                            	Ficha ficha = tablero[f][c];
+                            	Ficha ficha = tablero[fila][col];
                             	//es cuando inicia volteada
                             	ficha.setImagen(0, false);
+                            	
+                            	
                                 JButton btn = new JButton(ficha.getImagen());
-                                //se crea el listener de los botones
-                                btn.addActionListener(apachado -> {
-                                	//primero se valida
-                                });
                                 //solo hace la imagen/texto mas grande
                                 btn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
-                                botones[f][c] = btn;
+                                
+                                
+                                //se crea el listener de los botones
+                                btn.addActionListener(apachado -> {
+                                	// si está esperando validación
+                                    if (!turnoActivo[0]) return; 
+
+                                    if (seleccion[0] == -1) { 
+                                        // primera ficha
+                                        seleccion[0] = fila;
+                                        seleccion[1] = col;
+                                        Ficha ficha1 = tablero[fila][col];
+                                        ficha1.setImagen(ficha1.getId(), true);
+                                        btn.setText(ficha1.getImagen());
+                                        botonesSeleccionados[0] = btn;
+                                    } 
+                                    else if (seleccion[2] == -1 && !(seleccion[0] == fila && seleccion[1] == col)) { 
+                                        // segunda ficha (y no la misma que la primera)
+                                        seleccion[2] = fila;
+                                        seleccion[3] = col;
+                                        Ficha ficha2 = tablero[fila][col];
+                                        ficha2.setImagen(ficha2.getId(), true);
+                                        btn.setText(ficha2.getImagen());
+                                        botonesSeleccionados[1] = btn;
+
+                                        // Bloquear nuevas selecciones
+                                        turnoActivo[0] = false;
+
+                                        // Validar si son iguales después de un delay
+                                        Timer timer = new Timer(1000, ev -> {
+                                            Ficha f1 = tablero[seleccion[0]][seleccion[1]];
+                                            Ficha f2 = tablero[seleccion[2]][seleccion[3]];
+                                            
+                                            if (f1.getId() != f2.getId()) {
+                                                // no son iguales → voltearlas de nuevo
+                                                f1.setImagen(0, false);
+                                                f2.setImagen(0, false);
+                                                botonesSeleccionados[0].setText(f1.getImagen());
+                                                botonesSeleccionados[1].setText(f2.getImagen());
+                                                
+                                                // cambiar turno
+                                                partida.cambiarTurno();
+                                                lblInfo.setText("Turno: " + partida.getTurnoActual().getNombre());
+                                            }
+                                            else {
+                                            	//son iguales
+                                            }
+                                            // reset
+                                            Arrays.fill(seleccion, -1);
+                                            turnoActivo[0] = true;
+                                        });
+                                        timer.setRepeats(false);
+                                        timer.start();
+                                    }
+                                });
+
+                                
+                                botones[fila][col] = btn;
                                 panelGrid.add(btn);
                                 
                                 
                                 
                             }
                         }
-                        //se crea el "guia" de turnos
-                        JLabel lblInfo = new JLabel("Turno: " + partida.getTurnoActual().getNombre());
-                        tableroFrame.getContentPane().add(lblInfo, BorderLayout.SOUTH);
+                       
                         //se habilita
                         tableroFrame.getContentPane().add(panelGrid, BorderLayout.CENTER);
                         tableroFrame.setVisible(true);
